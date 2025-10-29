@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Chat - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <h1>🌍 Global Chat</h1>
+      <p>Join the conversation!</p>
+      
+      <form id="loginForm">
+        <input 
+          type="text" 
+          id="username" 
+          placeholder="Choose a username" 
+          required
+          maxlength="20"
+        >
+        
+        <div class="captcha-box">
+          <p>Solve this to prove you're human:</p>
+          <div id="captcha-question"></div>
+          <input 
+            type="number" 
+            id="captcha-answer" 
+            placeholder="Your answer" 
+            required
+          >
+        </div>
+        
+        <button type="submit">Join Chat</button>
+      </form>
+      
+      <div id="error-message"></div>
+    </div>
+  </div>
+
+  <script>
+    let captchaAnswer;
+
+    // Generate simple math captcha
+    function generateCaptcha() {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      captchaAnswer = num1 + num2;
+      document.getElementById('captcha-question').textContent = 
+        `What is ${num1} + ${num2}?`;
+    }
+
+    generateCaptcha();
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const answer = document.getElementById('captcha-answer').value;
+      const errorDiv = document.getElementById('error-message');
+
+      // Verify captcha
+      const response = await fetch('/verify-captcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer, expected: captchaAnswer })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        sessionStorage.setItem('username', username);
+        window.location.href = '/chat.html';
+      } else {
+        errorDiv.textContent = '❌ Wrong answer! Try again.';
+        errorDiv.style.display = 'block';
+        generateCaptcha();
+        document.getElementById('captcha-answer').value = '';
+      }
+    });
+  </script>
+</body>
+</html>
