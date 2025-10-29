@@ -26,106 +26,45 @@
     p { color: #666; margin-bottom: 30px; text-align: center; }
     input {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
+      padding: 15px;
+      margin-bottom: 20px;
       border: 2px solid #e0e0e0;
       border-radius: 5px;
-      font-size: 16px;
+      font-size: 18px;
     }
     input:focus { outline: none; border-color: #667eea; }
-    .captcha-box {
-      background: #f5f5f5;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    #captcha-question {
-      font-size: 20px;
-      font-weight: bold;
-      color: #667eea;
-      margin: 15px 0;
-    }
     button {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       background: #667eea;
       color: white;
       border: none;
       border-radius: 5px;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
     button:hover { background: #5568d3; }
-    #error-message {
-      color: #e74c3c;
-      margin-top: 15px;
-      display: none;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
   <div class="login-box">
     <h1>🌍 Global Chat</h1>
-    <p>Join the conversation!</p>
+    <p>Jump right in!</p>
     
     <form id="loginForm">
-      <input type="text" id="username" placeholder="Choose a username" required maxlength="20">
-      
-      <div class="captcha-box">
-        <p>Prove you're human:</p>
-        <div id="captcha-question"></div>
-        <input type="number" id="captcha-answer" placeholder="Your answer" required>
-      </div>
-      
-      <button type="submit">Join Chat</button>
+      <input type="text" id="username" placeholder="Choose a username" required maxlength="20" autofocus>
+      <button type="submit">Join Chat 🚀</button>
     </form>
-    
-    <div id="error-message"></div>
   </div>
 
   <script>
-    let captchaAnswer;
-
-    function generateCaptcha() {
-      const num1 = Math.floor(Math.random() * 10) + 1;
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      captchaAnswer = num1 + num2;
-      document.getElementById('captcha-question').textContent = `${num1} + ${num2} = ?`;
-    }
-
-    generateCaptcha();
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      
       const username = document.getElementById('username').value.trim();
-      const answer = document.getElementById('captcha-answer').value;
-      const errorDiv = document.getElementById('error-message');
-
-      try {
-        const response = await fetch('/api/verify-captcha', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answer, expected: captchaAnswer })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          sessionStorage.setItem('username', username);
-          window.location.href = '/public/chat.html';
-        } else {
-          errorDiv.textContent = '❌ Wrong answer! Try again.';
-          errorDiv.style.display = 'block';
-          generateCaptcha();
-          document.getElementById('captcha-answer').value = '';
-        }
-      } catch (error) {
-        errorDiv.textContent = '❌ Connection error';
-        errorDiv.style.display = 'block';
+      if (username) {
+        sessionStorage.setItem('username', username);
+        window.location.href = '/public/chat.html';
       }
     });
   </script>
